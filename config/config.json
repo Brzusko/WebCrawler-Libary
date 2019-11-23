@@ -1,0 +1,13 @@
+{
+    "httpServer": {
+        "mainPort": "3330"
+    },
+    "databases": {
+        "information" : {
+            "host": "",
+            "user": "",
+            "password": "",
+            "database": ""
+        }
+    }
+}
