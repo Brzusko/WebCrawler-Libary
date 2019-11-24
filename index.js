@@ -1,9 +1,11 @@
 const express = require('express');
 const config = require('./config/config.json');
 const ServiceSearcher = require('./file_dealing/ServiceSearcher');
+const path = require('path');
 
+const mainPath = path.resolve(__dirname);
 const t = new ServiceSearcher();
-t.FindDirectories();
+t.FindDirectories(mainPath);
 
 const mainHttpServer = express();
 
