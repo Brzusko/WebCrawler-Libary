@@ -1,0 +1,192 @@
+{
+  "lift": [
+    {
+      "name": "Cable_car.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Cable_car.png"
+    },
+    {
+      "name": "Cable_car.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Cable_car.svg"
+    },
+    {
+      "name": "Chair_lift.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Chair_lift.png"
+    },
+    {
+      "name": "Chair_lift.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Chair_lift.svg"
+    },
+    {
+      "name": "Drag_lift.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Drag_lift.png"
+    },
+    {
+      "name": "Drag_lift.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Drag_lift.svg"
+    },
+    {
+      "name": "Funicular.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Funicular.png"
+    },
+    {
+      "name": "Funicular.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Funicular.svg"
+    },
+    {
+      "name": "Gondola.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Gondola.png"
+    },
+    {
+      "name": "Gondola.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Gondola.svg"
+    },
+    {
+      "name": "Gravitation.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Gravitation.png"
+    },
+    {
+      "name": "hotel.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\hotel.svg"
+    },
+    {
+      "name": "Magic_carpet.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Magic_carpet.png"
+    },
+    {
+      "name": "Magic_carpet.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Magic_carpet.svg"
+    },
+    {
+      "name": "Mixed_lift.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Mixed_lift.png"
+    },
+    {
+      "name": "Mixed_lift.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Mixed_lift.svg"
+    },
+    {
+      "name": "Ponton.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Ponton.png"
+    },
+    {
+      "name": "Rope_tow.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Rope_tow.png"
+    },
+    {
+      "name": "Rope_tow.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Rope_tow.svg"
+    },
+    {
+      "name": "Skilift.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Skilift.png"
+    },
+    {
+      "name": "Skilift.svg",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\lift\\Skilift.svg"
+    }
+  ],
+  "open": [
+    {
+      "name": "0.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\open\\0.png"
+    },
+    {
+      "name": "2.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\open\\2.png"
+    },
+    {
+      "name": "3.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\open\\3.png"
+    }
+  ],
+  "pogoda": [
+    {
+      "name": "0.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\0.png"
+    },
+    {
+      "name": "1.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\1.png"
+    },
+    {
+      "name": "19.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\19.png"
+    },
+    {
+      "name": "2.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\2.png"
+    },
+    {
+      "name": "3.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\3.png"
+    },
+    {
+      "name": "4.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\4.png"
+    },
+    {
+      "name": "5.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\5.png"
+    },
+    {
+      "name": "6.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\6.png"
+    },
+    {
+      "name": "7.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\7.png"
+    },
+    {
+      "name": "weather0.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\pogoda\\weather0.png"
+    }
+  ],
+  "slope": [
+    {
+      "name": "0.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\slope\\0.png"
+    },
+    {
+      "name": "1.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\slope\\1.png"
+    },
+    {
+      "name": "2.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\slope\\2.png"
+    },
+    {
+      "name": "3.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\slope\\3.png"
+    },
+    {
+      "name": "4.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\slope\\4.png"
+    }
+  ],
+  "warunki": [
+    {
+      "name": "0d.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\warunki\\0d.png"
+    },
+    {
+      "name": "1d.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\warunki\\1d.png"
+    },
+    {
+      "name": "2d.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\warunki\\2d.png"
+    },
+    {
+      "name": "3d.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\warunki\\3d.png"
+    },
+    {
+      "name": "4d.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\warunki\\4d.png"
+    },
+    {
+      "name": "5d.png",
+      "path": "C:\\Users\\Wojtek\\Desktop\\WebCrawler-Libary\\static\\warunki\\5d.png"
+    }
+  ]
+}

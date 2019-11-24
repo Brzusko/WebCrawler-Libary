@@ -10,9 +10,18 @@ class ServiceScheduler{
     async RunServices() {
         const directories = await this.searcher.FindDirectories();
         for await(const paths of directories) {
-            const filePath = path.resolve(paths, 'index.js');
-            const process = cp.fork(filePath);
-            this.services.push(process);
+            if(paths.endsWith('resources'))
+                {
+                    const filePath = path.resolve(paths, 'index.js');
+                    const process = cp.fork(filePath, [this.searcher.filePath]);
+                    this.services.push(process);                        
+                }
+                else
+                {
+                    const filePath = path.resolve(paths, 'index.js');
+                    const process = cp.fork(filePath);
+                    this.services.push(process);
+                }
         }
     }
 }
