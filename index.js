@@ -1,18 +1,21 @@
 const express = require('express');
 const path = require('path');
+const request = require('request-promise-native');
 
 const config = require('./config/config.json');
 const ServiceSearcher = require('./file_dealing/ServiceSearcher');
 const SerivceRunner = require('./service/ServiceScheduler');
-
 const mainPath = path.resolve(__dirname);
+
 
 const mainHttpServer = express();
 
 // Testing routes
 
-mainHttpServer.get('/', (req, res) =>{
-    res.send({workin:"Server is working!"});
+
+mainHttpServer.get('/', async (req, res) =>{
+    const result = await request('http://localhost:3335/images');
+    res.send(JSON.parse(result));
 });
 
 mainHttpServer.listen(config.httpServer.mainPort, ()=>{
