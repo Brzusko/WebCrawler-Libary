@@ -1,13 +1,20 @@
 {
     "httpServer": {
-        "mainPort": "3330"
+        "mainPort": "3330",
+        "dbPort": "3306"
     },
     "databases": {
         "information" : {
-            "host": "",
-            "user": "",
-            "password": "",
-            "database": ""
+            "host": "remotemysql.com",
+            "user": "qJTowlKgZO",
+            "password": "J7eXdW0QhO",
+            "database": "qJTowlKgZO"
+        },
+        "crawler" : {
+            "host": "remotemysql.com",
+            "user": "uILM2CTKU7",
+            "password": "btEttDQ6Sd",
+            "database": "uILM2CTKU7"
         }
     }
 }
