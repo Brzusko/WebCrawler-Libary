@@ -59,7 +59,26 @@ router.get('/getAllLinks', async (req,res)=>{
     })
 })
 
-router.post('/addNewValue' async (req, res)=>{
+router.post('/getLink', async (req,res) => {
+    if(req.body.id === undefined)
+        res.send({message:'Please provide proper body'});
+    pool.getConnection((err, connection) =>{
+        if(err) res.send({message:err});
+        const queryString = `SELECT * FROM Links WHERE Links.ID = '${req.body.id}'`
+        connection.query(queryString, (error, results, field) =>{
+            obj = {
+                message: undefined
+            }
+            if(error) obj.message = error;
+            obj.message = results;
+            connection.release();
+            res.send(obj);
+        })
+    })
+})
 
+router.post('/addNewValue', async (req, res)=>{
+    console.log(req.body);
+    res.send();
 });
 module.exports = router;
