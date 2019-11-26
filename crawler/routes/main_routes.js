@@ -12,6 +12,7 @@ const pool = mysql.createPool({
     database: config.databases.crawler.database
 });
 
+pool.on('error', err => console.log(err));
 
 // LINKS
 
@@ -78,7 +79,48 @@ router.post('/getLink', async (req,res) => {
 })
 
 router.post('/addNewValue', async (req, res)=>{
-    console.log(req.body);
-    res.send();
+    const body = req.body;
+    console.log(body.valueType);
+    switch(body.valueType) {
+        case 'html':
+            {
+                pool.getConnection((err, connection)=>{
+                    if(err) res.send({message: err});
+                    const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, repleaceContentWith, htmlSelector, migrationTarget, slopeId) 
+                    VALUES(${body.link_id}, '${body.valueType}','${body.repleaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
+                    `
+                    connection.query(queryString, (error, result, fields) =>{
+                        if(error) res.send(error);
+                        res.send({message:`Successfully added new value to mine wih itd ${result.insertId}`});
+                        connection.release();
+                    })
+                });
+                break;
+            }
+        case 'table':
+            {
+                pool.getConnection((err,connection) =>{
+                    if(err){
+                        res.send(err);
+                        return;
+                    }
+                    const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, repleaceContentWith, htmlSelector, migrationTarget, slopeId) 
+                    VALUES(${body.link_id}, '${body.valueType}','${body.repleaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
+                    `
+                    connection.query(queryString, (error, result, fields) =>{
+                        if(error) res.send(error);
+                        const valueId = result.insertId;
+                        const thQueryString = `INSERT INTO `
+                    })
+                });
+                });
+                break;
+            }
+        default:
+            {
+                res.send({message: 'Unsupported crawler type'});
+                break;
+            }
+    }
 });
 module.exports = router;

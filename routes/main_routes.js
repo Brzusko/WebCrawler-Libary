@@ -67,7 +67,7 @@ router.post('/addNewValue', async (req,res) =>{
     options.body = req.body;
     options.body.valueType = valueType;
     const result = await request(options);
-    res.send('');
+    res.send(result);
 });
 
 
