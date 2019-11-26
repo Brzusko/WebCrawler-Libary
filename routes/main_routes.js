@@ -46,7 +46,7 @@ router.post('/addNewValue', async (req,res) =>{
         res.send({message: 'Didnt find link with that id'});
     if(!req.body.htmlType || !req.body.htmlSelector || !req.body.migrationTarget || !req.body.slopeId)
         res.send({message:'Wrong body content'});
-    if(req.body.th_selectors && req.body.htmlSelector === 'table')
+    if(req.body.th_selectors && req.body.htmlType == 'table')
     {
         for(let i = 0; i < req.body.th_selectors.length; i++){
             if(!req.body.th_selectors[i].tds || !req.body.th_selectors[i].htmlSelector)

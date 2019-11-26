@@ -109,10 +109,33 @@ router.post('/addNewValue', async (req, res)=>{
                     `
                     connection.query(queryString, (error, result, fields) =>{
                         if(error) res.send(error);
-                        const valueId = result.insertId;
-                        const thQueryString = `INSERT INTO `
+                        const masterId = result.insertId;
+                        const thArray = body.th_selectors;
+                        console.log(thArray);
+                        while(thArray.length > 0) {
+                            const th = thArray.pop();
+                            const innerQueryString = `INSERT INTO ValuesToMain_Table (masterValueID, th_selector)
+                            VALUES ('${masterId}', '${th.htmlSelector}')`;
+                            connection.query(innerQueryString, (innerError, innerResult, innerField)=>{
+                                if(innerError){
+                                    console.log(innerError);          
+                                }
+                                const innerMasterId = innerResult.insertId;
+                                const tds = th.tds;
+                                
+                                while(tds.length > 0) {
+                                    const td = tds.pop();
+                                    const tdQueryString = `INSERT INTO ValuesToMain_Table_Content (th_ID, statement, replaceWith, replaceMode)
+                                    VALUES('${innerMasterId}', '${td.statement}', '${td.replaceWith}', '${td.replaceMode}')`
+                                    connection.query(tdQueryString, (tdError, tdResult, tdField)=>{
+                                       if(tdError) console.log(tdError); 
+                                    });
+                                }
+                            });
+                        }
+                        connection.release();
+                        res.send('Added new vals');
                     })
-                });
                 });
                 break;
             }

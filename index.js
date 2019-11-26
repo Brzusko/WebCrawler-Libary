@@ -20,8 +20,8 @@ mainHttpServer.use(body_parser.json());
 mainHttpServer.use('/main', main_routes);
 
 mainHttpServer.get('/', async (req, res) =>{
-    const result = await request('http://localhost:3335/images');
-    res.send(JSON.parse(result));
+    const filePath = path.resolve(__dirname, 'crawler/temp/mined/14.html');
+    res.sendFile(filePath);
 });
 
 mainHttpServer.listen(config.httpServer.mainPort, ()=>{

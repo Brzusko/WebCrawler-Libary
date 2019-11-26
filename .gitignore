@@ -104,3 +104,7 @@ dist
 .tern-port
 
 /playground
+/crawler/temp/raw/*.html
+/crawler/temp/mined/*.html
+/crawler/temp/modified/*.html
+
