@@ -5,9 +5,7 @@ CREATE TABLE IF NOT EXISTS tx_ksskiconditionswide_domain_model_skicondition (
             uid int(11) NOT NULL auto_increment,
 
             pid int(11) DEFAULT '0' NOT NULL,
-
  
-
             on_name varchar(255) DEFAULT '' NOT NULL,
 
             town varchar(255) DEFAULT '' NOT NULL,

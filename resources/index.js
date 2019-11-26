@@ -13,8 +13,20 @@ service.get('/images', async (req,res) =>{
     res.send(data);
 });
 
+service.get('/reload', async (req, res)=>{
+    let returnObj = {
+        message: null
+    }
+    try{
+        await rl.LoadResources();
+        returnObj.message = 'Images reload has been succed!'
+    } catch(err) {
+        returnObj.message = err;
+    }
+    res.send(returnObj);
+});
+
 service.listen(port, ()=>{
     console.log(`Child service ${name} is listening on ${port}`);
-    
     rl.LoadResources();
 })

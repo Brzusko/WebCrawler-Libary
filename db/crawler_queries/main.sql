@@ -37,3 +37,10 @@ CREATE TABLE IF NOT EXISTS ValuesToMain_Table_Content(
 	REFERENCES ValuesToMain_Table(ID)
 );
 
+CREATE TABLE IF NOT EXISTS Settings(
+	ID INT(11) AUTO_INCREMENT NOT NULL,
+	websitePassword VARCHAR(255) NOT NULL,
+	interval INT(20),
+	CONSTRAINT PK_Settings PRIMARY KEY(ID)
+);
+
