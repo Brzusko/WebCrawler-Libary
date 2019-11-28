@@ -3,6 +3,7 @@ const path = require('path');
 const mysql = require('mysql');
 const puppeteer = require('puppeteer');
 const EventEmitter = require('events').EventEmitter;
+const DB = require('../db/DB.js')
 const config = require('../config/config.json');
 const cheerio = require('cheerio');
 
@@ -14,23 +15,13 @@ class Crawler extends EventEmitter{
         this.rawPath = path.resolve(_path, 'temp/raw');
         this.modified = path.resolve(_path, 'temp/modified');
         this.mined = path.resolve(_path, 'temp/mined');
-        this.pool = null;
         this.state = 'waiting';
         this.interval = null;
         this.path = _path;
-        // this.addListener('OnPurged', async ()=>{
-        //     await this.GetHtmlFromLinks();
-        // });
+        this.db = null;
         this.addListener('OnGeneratedRaw', async()=>{
-            await this.LoadContentToModify();
             this.state = 'waiting';
         });
-        // this.addListener('OnGeneratedMined', async()=>{
-        //     await this.PurgeTempFiles();
-        // })
-        // this.addListener('OnLaunch', async()=>{
-        //     await this.PurgeTempFiles();
-        // })
     }
     async Run(){
         if(this.state == 'running')
@@ -41,9 +32,10 @@ class Crawler extends EventEmitter{
         this.state = 'running';
         await this.PurgeTempFiles();
         await this.GetHtmlFromLinks();
+        await this.LoadContentToModify();
     }
     async Launch(interval){
-        this.pool = mysql.createPool({
+        this.db = new DB({
             connectionLimit: 10,
             host: config.databases.crawler.host,
             user: config.databases.crawler.user,
@@ -62,23 +54,15 @@ class Crawler extends EventEmitter{
 
     async GetHtmlFromLinks() {
         console.log('Generating links start');
-        this.pool.getConnection(async (err, connection)=>{
-            if(err) throw err;
-            connection.query('SELECT * FROM Links', async (error, result, fields)=>{
-                for(let i = 0; i<result.length; i++){
-                    console.log(result[i].Uri);
-                    await this.page.goto(result[i].Uri);
-                    const content = await this.page.content();
-                    const filePath = path.resolve(this.rawPath,`${result[i].ID}.html`);
-                    try {
-                    const fileResult = await fsp.appendFile(filePath, content);
-                    } finally{}
-                }
-                connection.release();
-                console.log('Generating ended');
-                this.emit('OnGeneratedRaw');
-            });
-        });
+        const result = await this.db.Query('SELECT * FROM Links');
+        for await(const site of result){
+            await this.page.goto(site.Uri);
+            const content = await this.page.content();
+            const filePath = path.resolve(this.rawPath, `${site.ID}.html`);
+            try {
+                const fileResult = await fsp.appendFile(filePath, content);
+            } finally{}
+        }
     }
     async PurgeTempFiles() {
         console.log('Staring purging ');
@@ -110,18 +94,15 @@ class Crawler extends EventEmitter{
                 const convertedId = Number(JSON.parse(JSON.stringify(id)));
                 const htmlFile = await fsp.readFile(path.resolve(this.rawPath, dirent.name))
                 const $ = cheerio.load(htmlFile);
-
-                this.pool.getConnection(async (err, connection) =>{
-                    console.log('pooling');
-                    connection.query(`SELECT htmlSelector, ID FROM ValuesToMain WHERE uriID = ${convertedId}`, async (error,results,fileds)=>{
-                        if(error) throw error;
-                        const scrapedHtml = $(results[0].htmlSelector).parent().html()
-                        const fileAppendResult = await fsp.appendFile(path.resolve(this.mined, `${results[0].ID}.html`), scrapedHtml);
-                        connection.release();
-                        console.log('Ending load')
-                        this.emit('OnGeneratedMined');
-                    });
-                });
+                const result = await this.db.Query(`SELECT htmlSelector, ID FROM ValuesToMain WHERE uriID = ${convertedId}`);
+                const scrapedHtml = $(result[0].htmlSelector).parent().html();
+                try{
+                    const fileAppendResult = await fsp.appendFile(path.resolve(this.mined, `${result[0].ID}.html`), scrapedHtml);
+                } catch(err) {
+                    console.log(err);
+                } finally{
+                    this.emit('OnGeneratedRaw');
+                }
             }
         }
     }

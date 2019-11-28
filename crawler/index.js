@@ -17,5 +17,5 @@ service.get('/', (req,res) =>{
 
 service.listen(port, ()=>{
     console.log(`Child service ${name} is listening on ${port}`);
-    crawler.Launch(20000);
+    //crawler.Launch(10000);
 })

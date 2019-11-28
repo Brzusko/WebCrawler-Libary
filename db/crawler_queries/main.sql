@@ -19,28 +19,21 @@ CREATE TABLE IF NOT EXISTS ValuesToMain (
 
 CREATE TABLE IF NOT EXISTS ValuesToMain_Table (
 	ID INT(11) AUTO_INCREMENT NOT NULL,
-	masterValueID INT(11) NOT NULL,
-	th_selector VARCHAR(255) NOT NULL,
-	CONSTRAINT PK_ValueToMainTable PRIMARY KEY(ID),
-	CONSTRAINT FK_ValueToMainTable_ValueToMain FOREIGN KEY(masterValueID)
-	REFERENCES ValuesToMain(ID)
-);
-
-CREATE TABLE IF NOT EXISTS ValuesToMain_Table_Content(
-	ID INT(11) AUTO_INCREMENT NOT NULL,
-	th_ID INT(11) NOT NULL,
-	statement VARCHAR(255) NOT NULL,
-	replaceWith VARCHAR(255) NOT NULL,
-	replaceMode VARCHAR(255) NOT NULL,
-	CONSTRAINT PK_ValuesToMainTableContent PRIMARY KEY(ID),
-	CONSTRAINT FK_ValuesToMainTableContent_ValuesToMain_Table FOREIGN KEY(th_ID)
-	REFERENCES ValuesToMain_Table(ID)
+	masterID INT(11) NOT NULL,
+	htmlSelectorIfExists VARCHAR(255),
+	expectedValue VARCHAR(255) NOT NULL DEFAULT '',
+	replaceWith VARCHAR(255) NOT NULL DEFAULT 'IMG',
+	replacementType VARCHAR(255) NOT NULL DEFAULT 'INNER',
+	customCSS VARCHAR(255),
+	customAttributes VARCHAR(255),
+	CONSTRAINT PK_Value_Table PRIMARY KEY(ID),
+	CONSTRAINT FK_Table_Value FOREIGN KEY(masterID) REFERENCES ValuesToMain(ID)
 );
 
 CREATE TABLE IF NOT EXISTS Settings(
 	ID INT(11) AUTO_INCREMENT NOT NULL,
 	websitePassword VARCHAR(255) NOT NULL,
-	interval INT(20),
+	intervalSpeed INT(11),
 	CONSTRAINT PK_Settings PRIMARY KEY(ID)
 );
 
