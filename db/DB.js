@@ -7,16 +7,42 @@ class DB {
 
     Query(query){
         return new Promise((resolve, reject) => {
+            if(query === undefined) reject(new Error('Query string is not defined, plx fix that'));
             this.pool.getConnection((err, connection) =>{
                 if(err) reject(err);
+                console.log(query);
                 connection.query(query, (error, results, fields) => {
                     if(error){
                         connection.release();
                         reject(error);
                     }
+                    connection.release();
                     resolve(results);
                 })
             })
+        });
+    }
+    QueryChain(queries) {
+        return new Promise((resolve, reject)=>{
+            this.pool.getConnection((err, connection) =>{
+                if(err) reject(err);
+                const resultsToReturn = [];
+                for(let i = 0; i<queries.length; i++){
+                    connection.query(queries[i], (error, results, fileds) =>{
+                        if(error) {
+                            connection.release();
+                            reject(error);
+                            return;
+                        }
+                        resultsToReturn.push(results);
+                        if(i === queries.length - 1)
+                        {
+                            connection.release();
+                            resolve(resultsToReturn);
+                        }
+                    });
+                }
+            });
         });
     }
 }

@@ -2,6 +2,7 @@ const express = require('express');
 
 const mysql = require('mysql');
 const config = require('../../config/config.json')
+const DB = require('../../db/DB.js');
 
 const router = express.Router();
 const pool = mysql.createPool({
@@ -12,6 +13,15 @@ const pool = mysql.createPool({
     database: config.databases.crawler.database
 });
 
+const db = new DB({
+    connectionLimit: 10,
+    host: config.databases.crawler.host,
+    user: config.databases.crawler.user,
+    password: config.databases.crawler.password,
+    database: config.databases.crawler.database
+});
+
+
 pool.on('error', err => console.log(err));
 
 // LINKS
@@ -21,61 +31,34 @@ router.post('/addLink', async (req, res)=>{
     const body = req.body;
     if(!body || !body.uri)
         res.send({message:'Missing body!'});
-
-    pool.getConnection((err, connection) =>{
-        if(err) res.send({message:err});
-        const queryString = `INSERT INTO Links (Uri) VALUES ('${body.uri}')`;
+    try {
+        const result = await db.Query(`INSERT INTO Links (Uri) VALUES ('${body.uri}')`);
         const obj = {
-            message:undefined
+            message: '' + (result.insertId ? `Successfull added link ${body.uri} with new id ${result.insertId}` : `Couldnt add that link: ${body.uri}`)
         }
-        connection.query(queryString, (error, results, fields)=>{
-            if(error) obj.message = error;
-            obj.message = `Successfully added new Link to database ${body.uri}`;
-            connection.release();
-        });
-        if(obj.message === undefined)
-            obj.message = 'That link already exists in database';
         res.send(obj);
-    });
+    } catch(err) {res.send(err);}
 });
 
 //router.post('/deleteLink')
 
 router.get('/getAllLinks', async (req,res)=>{
-    pool.getConnection((err, connection)=>{
-        if(err) res.send(err);
-        const queryString = 'SELECT * FROM Links';
-        const obj = {
-            message: undefined
-        }
-        connection.query(queryString, (error, results, field)=>{
-            if(error) obj.message = error;
-            obj.message = new Array();
-            results.forEach(element => {
-                obj.message.push(element);
-            });
-            connection.release();   
-            res.send(obj);        
-        });
-    })
+
+    try
+    {
+        const result = await db.Query('SELECT * FROM Links');
+        res.send(JSON.stringify(result, null, 2));
+    } catch(err) {res.send(err);}
 })
 
 router.post('/getLink', async (req,res) => {
     if(req.body.id === undefined)
         res.send({message:'Please provide proper body'});
-    pool.getConnection((err, connection) =>{
-        if(err) res.send({message:err});
-        const queryString = `SELECT * FROM Links WHERE Links.ID = '${req.body.id}'`
-        connection.query(queryString, (error, results, field) =>{
-            obj = {
-                message: undefined
-            }
-            if(error) obj.message = error;
-            obj.message = results;
-            connection.release();
-            res.send(obj);
-        })
-    })
+    
+        try{
+            const result = await db.Query(`SELECT * FROM Links WHERE Links.ID = ${req.body.id}`);
+            res.send(result);
+        } catch(err) {res.send(err);}
 })
 
 router.post('/addNewValue', async (req, res)=>{
@@ -84,59 +67,36 @@ router.post('/addNewValue', async (req, res)=>{
     switch(body.valueType) {
         case 'html':
             {
-                pool.getConnection((err, connection)=>{
-                    if(err) res.send({message: err});
-                    const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, repleaceContentWith, htmlSelector, migrationTarget, slopeId) 
-                    VALUES(${body.link_id}, '${body.valueType}','${body.repleaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
-                    `
-                    connection.query(queryString, (error, result, fields) =>{
-                        if(error) res.send(error);
-                        res.send({message:`Successfully added new value to mine wih itd ${result.insertId}`});
-                        connection.release();
-                    })
+                const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, repleaceContentWith, htmlSelector, migrationTarget, slopeId) 
+                VALUES(${body.link_id}, '${body.valueType}','${body.repleaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
+                `
+                try{
+                    const result = await db.Query(queryString);
+                    res.send({message:'Successfully added new Value to main!',
+                    body
                 });
+                } catch(err) {res.send(err);}
                 break;
             }
         case 'table':
             {
-                pool.getConnection((err,connection) =>{
-                    if(err){
-                        res.send(err);
-                        return;
+                const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, repleaceContentWith, htmlSelector, migrationTarget, slopeId) 
+                VALUES(${body.link_id}, '${body.valueType}','${body.repleaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
+                `
+                try{
+                    const result = await db.Query(queryString);
+                    let queries = [];
+                    for await(const tableEl of body.tableContent)
+                    {
+                        const innerQuery = `INSERT INTO ValuesToMain_Table (masterID,htmlSelectorifExists, expectedValue, replaceWith, replacementType, customCSS, customAttributes)
+                        VALUES('${result.insertId}', '${tableEl.htmlSelectorifExists}', '${tableEl.expectedValue}', '${tableEl.replaceWith}', '${tableEl.replacementType}', '${tableEl.customCSS}', '${tableEl.customAttributes}');
+                        `
+                        queries.push(innerQuery);
+                        
                     }
-                    const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, repleaceContentWith, htmlSelector, migrationTarget, slopeId) 
-                    VALUES(${body.link_id}, '${body.valueType}','${body.repleaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
-                    `
-                    connection.query(queryString, (error, result, fields) =>{
-                        if(error) res.send(error);
-                        const masterId = result.insertId;
-                        const thArray = body.th_selectors;
-                        console.log(thArray);
-                        while(thArray.length > 0) {
-                            const th = thArray.pop();
-                            const innerQueryString = `INSERT INTO ValuesToMain_Table (masterValueID, th_selector)
-                            VALUES ('${masterId}', '${th.htmlSelector}')`;
-                            connection.query(innerQueryString, (innerError, innerResult, innerField)=>{
-                                if(innerError){
-                                    console.log(innerError);          
-                                }
-                                const innerMasterId = innerResult.insertId;
-                                const tds = th.tds;
-                                
-                                while(tds.length > 0) {
-                                    const td = tds.pop();
-                                    const tdQueryString = `INSERT INTO ValuesToMain_Table_Content (th_ID, statement, replaceWith, replaceMode)
-                                    VALUES('${innerMasterId}', '${td.statement}', '${td.replaceWith}', '${td.replaceMode}')`
-                                    connection.query(tdQueryString, (tdError, tdResult, tdField)=>{
-                                       if(tdError) console.log(tdError); 
-                                    });
-                                }
-                            });
-                        }
-                        connection.release();
-                        res.send('Added new vals');
-                    })
-                });
+                    const tableResult = await db.QueryChain(queries);
+                    res.send({message: 'Successfully added new Value to main', body, tableResult});
+                } catch(err) {res.send(err);}
                 break;
             }
         default:

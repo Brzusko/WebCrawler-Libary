@@ -16,6 +16,17 @@ router.post('/addLink', async (req,res)=>{
     res.send(result);
 });
 
+router.post('/getLink', async (req,res) =>{
+    let options = {
+        method: 'POST',
+        uri: 'http://localhost:3333/main/getLink',
+        body: req.body,
+        json: true
+    }
+    const result = await request(options);
+    res.send(result);
+})
+
 router.get('/getAllLinks', async (req,res) =>{
     let options = {
         method: 'GET',
@@ -42,12 +53,25 @@ router.post('/addNewValue', async (req,res) =>{
     op2.uri = 'http://localhost:3333/main/getLink'
     op2.body = {id: req.body.link_id};
     const link = await request(op2);
-    if(link.message.length === 0)
+    if(!link)
         res.send({message: 'Didnt find link with that id'});
     if(!req.body.htmlType || !req.body.htmlSelector || !req.body.migrationTarget || !req.body.slopeId)
         res.send({message:'Wrong body content'});
-
+    if(req.body.tableContent && req.body.htmlType === 'table')
+    {
+        for(let i = 0; i < req.body.tableContent.length; i++)
+        {
+            const tableContent = req.body.tableContent[i];
+            if(!tableContent.expectedValue || !tableContent.replaceWith || !tableContent.replacementType)
+            {
+                res.send({message:'Wrong table content!', tableContent});
+                return;
+            }
+        }
+         valueType = 'table';   
+    }
     
+
     options.body = req.body;
     options.body.valueType = valueType;
     const result = await request(options);
