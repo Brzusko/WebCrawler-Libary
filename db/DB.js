@@ -10,7 +10,6 @@ class DB {
             if(query === undefined) reject(new Error('Query string is not defined, plx fix that'));
             this.pool.getConnection((err, connection) =>{
                 if(err) reject(err);
-                console.log(query);
                 connection.query(query, (error, results, fields) => {
                     if(error){
                         connection.release();

@@ -5,6 +5,7 @@ const puppeteer = require('puppeteer');
 const EventEmitter = require('events').EventEmitter;
 const DB = require('../db/DB.js')
 const config = require('../config/config.json');
+const Scraper = require('./Scraper.js');
 const cheerio = require('cheerio');
 
 class Crawler extends EventEmitter{
@@ -19,8 +20,9 @@ class Crawler extends EventEmitter{
         this.interval = null;
         this.path = _path;
         this.db = null;
+        this.scraper = null;
         this.addListener('OnGeneratedRaw', async()=>{
-            this.state = 'waiting';
+            
         });
     }
     async Run(){
@@ -33,6 +35,9 @@ class Crawler extends EventEmitter{
         await this.PurgeTempFiles();
         await this.GetHtmlFromLinks();
         await this.LoadContentToModify();
+        await this.scraper.Run();
+        await this.AddDelay(2000);
+        //scrap things
     }
     async Launch(interval){
         this.db = new DB({
@@ -46,6 +51,7 @@ class Crawler extends EventEmitter{
             ignoreDefaultArgs: ['--disable-extensions'],
         });
         this.page = await this.browswer.newPage();
+        this.scraper = new Scraper(this.db, this.mined, this.modified);
         this.interval = setInterval(async ()=>{
             await this.Run();
         }, interval);
@@ -53,7 +59,7 @@ class Crawler extends EventEmitter{
     }
 
     async GetHtmlFromLinks() {
-        console.log('Generating links start');
+        console.log('Execution 2 started');
         const result = await this.db.Query('SELECT * FROM Links');
         for await(const site of result){
             await this.page.goto(site.Uri);
@@ -63,9 +69,10 @@ class Crawler extends EventEmitter{
                 const fileResult = await fsp.appendFile(filePath, content);
             } finally{}
         }
+        console.log('Execution 2 ended');
     }
     async PurgeTempFiles() {
-        console.log('Staring purging ');
+        console.log('Execution 1 started');
         const tempPath = path.resolve(this.path, 'temp');
         const dir = await fsp.opendir(path.resolve(this.path, 'temp'));
         for await(const dirent of dir){
@@ -82,22 +89,24 @@ class Crawler extends EventEmitter{
                     await fsp.unlink(path.resolve(tempPath, dirent.name));
             }
         }
-        console.log('ending purging');
+        console.log('Execution 1 ended');
         this.emit('OnPurged');
     }
 
     async LoadContentToModify() {
+        console.log('Execution 3 started');
         const dir = await fsp.opendir(this.rawPath);
         for await(const dirent of dir) {
             if(dirent.name !== '.a'){
                 const id = dirent.name.match(/^[a-z0-9]+/g);
                 const convertedId = Number(JSON.parse(JSON.stringify(id)));
+                const result = await this.db.Query(`SELECT htmlSelector, ID FROM ValuesToMain WHERE uriID = ${convertedId}`);
+                if(result.length === 0 ) continue;
                 const htmlFile = await fsp.readFile(path.resolve(this.rawPath, dirent.name))
                 const $ = cheerio.load(htmlFile);
-                const result = await this.db.Query(`SELECT htmlSelector, ID FROM ValuesToMain WHERE uriID = ${convertedId}`);
                 const scrapedHtml = $(result[0].htmlSelector).parent().html();
-                try{
-                    const fileAppendResult = await fsp.appendFile(path.resolve(this.mined, `${result[0].ID}.html`), scrapedHtml);
+                try {
+                    const fileAppendResult = await fsp.appendFile(path.resolve(this.mined, `${convertedId}.html`), scrapedHtml);
                 } catch(err) {
                     console.log(err);
                 } finally{
@@ -105,6 +114,15 @@ class Crawler extends EventEmitter{
                 }
             }
         }
+        console.log('Execution 3 ended');
+    }
+    AddDelay(ms){
+        return new Promise((resolve, reject)=>{
+            const timeout = setTimeout(()=>{
+                this.state = 'waiting';
+                resolve();
+            }, ms);
+        })
     }
 }
 
