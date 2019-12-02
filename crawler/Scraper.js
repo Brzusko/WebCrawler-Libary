@@ -7,19 +7,14 @@ const fsp = require('fs').promises;
 */
 
 class Scraper {
-    constructor(DBobject, _toMinePath, _toMinedPath){
+    constructor(DBobject, _toModifiedPath, _toMinedPath){
         this.db = DBobject;
-        this.toMinePath = _toMinePath;
+        this.toModifiedPath = _toModifiedPath;
         this.toMinedPath = _toMinedPath;
-        this.htmlToScrap = [];
-        this.tablesToScrap = [];
-        this.pureHtmlContent = [];
+        this.links = [];
+        this.table = [];
+        this.values = [];
     }
-    async LoadFiles() {
-
-    }
-
-    async 
 
     async ScrapTable() {
 
@@ -30,15 +25,39 @@ class Scraper {
     }
 
     async Run() {
+        await this.GetInfoFromDB();
+        this.ToString();
+    }
 
+    async GetInfoFromDB() {
+        this.links = await this.db.Query(`SELECT * FROM Links;`);
+        if(this.links.length === 0)
+            return;
+        for await(const link of this.links)
+        {
+            const value = await this.db.Query(`SELECT * FROM ValuesToMain WHERE uriID = ${link.ID}`);
+            if(value.length === 0)
+                continue;
+            this.values.push(value);
+
+            if(value.htmlType === 'table')
+            {
+                const tables = await this.db.Query(`SELECT * FROM ValuesToMain_Table WHERE masterID = ${value.ID}`);
+                if(table.length === 0)
+                    continue;
+                this.table.push(tables);
+            }
+                
+
+        }
+
+    }
+    ToString(){
+        console.log(this.links);
+        console.log(this.values);
+        console.log(this.table);
     }
 }
 
-class PureHtmlContent {
-    constructor(ID, htmlContent) {
-        this.ID = ID;
-        this.htmlContent = htmlContent;
-    }
-}
 
 module.exports = Scraper;

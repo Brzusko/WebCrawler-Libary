@@ -144,10 +144,17 @@ class Crawler extends EventEmitter{
                 if(result.length === 0 ) continue;
                 const htmlFile = await fsp.readFile(path.resolve(this.rawPath, dirent.name))
                 const $ = cheerio.load(htmlFile);
-                const scrapedHtml = $(result[0].htmlSelector).parent().html();
                 try {
                     const directoryAppendResult = await fsp.mkdir(path.resolve(this.mined, `${convertedId}`));
-                    const fileAppendResult = await fsp.appendFile(path.resolve(this.mined, `${convertedId}/${result[0].ID}.html`), scrapedHtml);
+                    for await(const toScarp of result){
+                        let scrapedHtml = null;
+                        if(toScarp.htmlType == 'html')
+                            scrapedHtml = $(toScarp.htmlSelector).html();
+                        else
+                            scrapedHtml = $(toScarp.htmlSelector).parent().html();
+                        const fileAppendResult = await fsp.appendFile(path.resolve(this.mined, `${convertedId}/${toScarp.ID}.html`), scrapedHtml);
+                    }
+                    
                 } catch(err) {
                     console.log(err);
                 } finally{

@@ -14,6 +14,7 @@ class DB {
                     if(error){
                         connection.release();
                         reject(error);
+                        return;
                     }
                     connection.release();
                     resolve(results);

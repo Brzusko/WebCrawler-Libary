@@ -5,13 +5,6 @@ const config = require('../../config/config.json')
 const DB = require('../../db/DB.js');
 
 const router = express.Router();
-const pool = mysql.createPool({
-    connectionLimit: 10,
-    host: config.databases.crawler.host,
-    user: config.databases.crawler.user,
-    password: config.databases.crawler.password,
-    database: config.databases.crawler.database
-});
 
 const db = new DB({
     connectionLimit: 10,
@@ -21,8 +14,6 @@ const db = new DB({
     database: config.databases.crawler.database
 });
 
-
-pool.on('error', err => console.log(err));
 
 // LINKS
 
@@ -67,8 +58,8 @@ router.post('/addNewValue', async (req, res)=>{
     switch(body.valueType) {
         case 'html':
             {
-                const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, repleaceContentWith, htmlSelector, migrationTarget, slopeId) 
-                VALUES(${body.link_id}, '${body.valueType}','${body.repleaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
+                const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, replaceContentWith, htmlSelector, migrationTarget, slopeId) 
+                VALUES(${body.link_id}, '${body.valueType}','${body.replaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
                 `
                 try{
                     const result = await db.Query(queryString);
