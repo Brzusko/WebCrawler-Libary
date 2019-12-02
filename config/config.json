@@ -1,6 +1,6 @@
 {
     "httpServer": {
-        "mainPort": "3330",
+        "mainPort": "80",
         "dbPort": "3306"
     },
     "databases": {

@@ -2,6 +2,10 @@ const cheerio = require('cheerio');
 const path = require('path');
 const fsp = require('fs').promises;
 
+/*
+
+*/
+
 class Scraper {
     constructor(DBobject, _toMinePath, _toMinedPath){
         this.db = DBobject;
@@ -11,6 +15,12 @@ class Scraper {
         this.tablesToScrap = [];
         this.pureHtmlContent = [];
     }
+    async LoadFiles() {
+
+    }
+
+    async 
+
     async ScrapTable() {
 
     }

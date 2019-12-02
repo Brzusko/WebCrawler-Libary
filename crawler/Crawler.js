@@ -74,23 +74,63 @@ class Crawler extends EventEmitter{
     async PurgeTempFiles() {
         console.log('Execution 1 started');
         const tempPath = path.resolve(this.path, 'temp');
-        const dir = await fsp.opendir(path.resolve(this.path, 'temp'));
-        for await(const dirent of dir){
-            if(dirent.isDirectory())
-            {
-                const innerDirent = path.resolve(tempPath, dirent.name)
-                const filesInDirent = await fsp.readdir(innerDirent, {withFileTypes:true});
-                for await(const file of filesInDirent) {
-                    if(file.name != '.a')
-                        await fsp.unlink(path.resolve(innerDirent, file.name));
-                }
-            } else {
-                if(dirent.name != '.a')
-                    await fsp.unlink(path.resolve(tempPath, dirent.name));
+        const mainDir = await fsp.opendir(tempPath);
+        
+        const filesToDelete = [];
+        const dirsToDelete = [];
+
+        for await(const dirent of mainDir){
+            
+            let inDirentPath = path.resolve(tempPath, dirent.name);
+
+            if(dirent.isDirectory()) {
+                const innerDir = await fsp.opendir(inDirentPath);
+                for await(const innerDirent of innerDir)
+                    {
+                        if(this.IsIgnoredFile(innerDirent.name, ['.a']) === true)
+                            continue;
+                        const inInnerDirentPath = path.resolve(inDirentPath, innerDirent.name);
+                        if(innerDirent.isDirectory())
+                        {
+                            dirsToDelete.push(inInnerDirentPath);
+
+                            const lastDir = await fsp.opendir(inInnerDirentPath);
+                            for await(const file of lastDir)
+                                filesToDelete.push(path.resolve(inInnerDirentPath, file.name)); 
+                        }
+                        else
+                            filesToDelete.push(inInnerDirentPath);
+                    }
             }
+            else
+                filesToDelete.push(inDirentPath);
+
         }
+
+        for await(const file of filesToDelete)
+            try{
+                const delResult = await fsp.unlink(file);
+            } catch(err) {console.log(err);}
+        
+        for await(const dir of dirsToDelete)
+            try{
+                const delResult = await fsp.rmdir(dir);
+            } catch(err) {console.log(err);}
+
         console.log('Execution 1 ended');
         this.emit('OnPurged');
+    }
+
+
+    IsIgnoredFile(fileToCheck, ignoredFiles){
+        let IsIgnored = false;
+        for(let i = 0; i < ignoredFiles.length; i++){
+            if(fileToCheck == ignoredFiles[i]){
+                IsIgnored = true;
+                break;
+            }
+        }
+        return IsIgnored;
     }
 
     async LoadContentToModify() {
@@ -100,13 +140,14 @@ class Crawler extends EventEmitter{
             if(dirent.name !== '.a'){
                 const id = dirent.name.match(/^[a-z0-9]+/g);
                 const convertedId = Number(JSON.parse(JSON.stringify(id)));
-                const result = await this.db.Query(`SELECT htmlSelector, ID FROM ValuesToMain WHERE uriID = ${convertedId}`);
+                const result = await this.db.Query(`SELECT htmlSelector, ID, htmlType FROM ValuesToMain WHERE uriID = ${convertedId}`);
                 if(result.length === 0 ) continue;
                 const htmlFile = await fsp.readFile(path.resolve(this.rawPath, dirent.name))
                 const $ = cheerio.load(htmlFile);
                 const scrapedHtml = $(result[0].htmlSelector).parent().html();
                 try {
-                    const fileAppendResult = await fsp.appendFile(path.resolve(this.mined, `${convertedId}.html`), scrapedHtml);
+                    const directoryAppendResult = await fsp.mkdir(path.resolve(this.mined, `${convertedId}`));
+                    const fileAppendResult = await fsp.appendFile(path.resolve(this.mined, `${convertedId}/${result[0].ID}.html`), scrapedHtml);
                 } catch(err) {
                     console.log(err);
                 } finally{
