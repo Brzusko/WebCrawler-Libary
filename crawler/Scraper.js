@@ -17,7 +17,38 @@ class Scraper {
     }
 
     async ScrapTable() {
-        console.log(this.table);
+        
+        for await(const tableObj of this.table){
+            const dirMinedPath = path.resolve(this.toMinedPath, `${tableObj.linkID}`);
+            const htmlTableFilePath = path.resolve(dirMinedPath, `${tableObj.ID}.html`);
+            const dirModifiedPath = path.resolve(this.toModifiedPath, `${tableObj.linkID}`);
+            const htmlTableModifiedPath = path.resolve(dirModifiedPath, `${tableObj.ID}.html`);
+            
+            
+            try{
+                const readResult = (await fsp.readFile(htmlTableFilePath)).toString();
+                let $ = cheerio.load(readResult);
+                $('td').each(function(index, element){
+                    const tdContent = $(this).html();
+                    for (const tableScrapInfo of tableObj.tables)
+                    {
+                        const index = tdContent.indexOf(tableScrapInfo.expectedValue)
+                        if(index !== -1)
+                            $(this).replaceWith(tableScrapInfo.replaceWith);
+                    }
+                });
+                
+                const creatingDirResult = await fsp.mkdir(dirModifiedPath);
+                const writeFileResult = await fsp.appendFile(htmlTableModifiedPath, $.html());
+                
+            } catch(err) {console.log(err);}
+        }
+    }
+
+    ReplaceTableContent($, tableObj){
+        return new Promise((resolve, reject) =>{
+
+        });
     }
 
     async Scrap() {
@@ -81,7 +112,7 @@ class Scraper {
                 const tables = await this.db.Query(`SELECT * FROM ValuesToMain_Table WHERE masterID = ${value.ID}`);
                 if(tables.length === 0)
                     continue;
-                this.table.push({ID: value.ID, tables});
+                this.table.push({linkID: link.ID, ID: value.ID, tables});
             }
                 
 
