@@ -25,7 +25,10 @@ class DB {
     QueryChain(queries) {
         return new Promise((resolve, reject)=>{
             this.pool.getConnection((err, connection) =>{
-                if(err) reject(err);
+                if(err) {
+                    reject(err)
+                    return;
+                };
                 const resultsToReturn = [];
                 for(let i = 0; i<queries.length; i++){
                     connection.query(queries[i], (error, results, fileds) =>{

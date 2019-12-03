@@ -32,9 +32,9 @@ class Crawler extends EventEmitter{
         //Manipulate that files then create new html file with edited content
         //And sooooo on
         this.state = 'running';
-        await this.PurgeTempFiles();
-        await this.GetHtmlFromLinks();
-        await this.LoadContentToModify();
+        //await this.PurgeTempFiles();
+        //await this.GetHtmlFromLinks();
+        //await this.LoadContentToModify();
         await this.scraper.Run();
         await this.AddDelay(2000);
         //scrap things
@@ -51,7 +51,7 @@ class Crawler extends EventEmitter{
             ignoreDefaultArgs: ['--disable-extensions'],
         });
         this.page = await this.browswer.newPage();
-        this.scraper = new Scraper(this.db, this.mined, this.modified);
+        this.scraper = new Scraper(this.db, this.modified, this.mined);
         this.interval = setInterval(async ()=>{
             await this.Run();
         }, interval);

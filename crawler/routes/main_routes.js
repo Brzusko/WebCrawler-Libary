@@ -71,16 +71,26 @@ router.post('/addNewValue', async (req, res)=>{
             }
         case 'table':
             {
-                const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, repleaceContentWith, htmlSelector, migrationTarget, slopeId) 
-                VALUES(${body.link_id}, '${body.valueType}','${body.repleaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
+                console.log('here')
+                const queryString = `INSERT INTO ValuesToMain (uriID, htmlType, replaceContentWith, htmlSelector, migrationTarget, slopeId) 
+                VALUES(${body.link_id}, '${body.valueType}','${body.replaceContent}', '${body.htmlSelector}', '${body.migrationTarget}', ${body.slopeId}); 
                 `
                 try{
                     const result = await db.Query(queryString);
                     let queries = [];
                     for await(const tableEl of body.tableContent)
                     {
+                        let newExpectedValue = "";
+                        for(let char of tableEl.expectedValue)
+                        {
+                            if(char === "'")
+                                newExpectedValue += '"';
+                            else
+                                newExpectedValue += char;
+                        }
+                        console.log(newExpectedValue);
                         const innerQuery = `INSERT INTO ValuesToMain_Table (masterID,htmlSelectorifExists, expectedValue, replaceWith, replacementType, customCSS, customAttributes)
-                        VALUES('${result.insertId}', '${tableEl.htmlSelectorifExists}', '${tableEl.expectedValue}', '${tableEl.replaceWith}', '${tableEl.replacementType}', '${tableEl.customCSS}', '${tableEl.customAttributes}');
+                        VALUES('${result.insertId}', '${tableEl.htmlSelectorifExists}', '${newExpectedValue}', '${tableEl.replaceWith}', '${tableEl.replacementType}', '${tableEl.customCSS}', '${tableEl.customAttributes}');
                         `
                         queries.push(innerQuery);
                         
