@@ -32,11 +32,11 @@ class Crawler extends EventEmitter{
         //Manipulate that files then create new html file with edited content
         //And sooooo on
         this.state = 'running';
-        //await this.PurgeTempFiles();
-        //await this.GetHtmlFromLinks();
-        //await this.LoadContentToModify();
+        await this.PurgeTempFiles();
+        await this.GetHtmlFromLinks();
+        await this.LoadContentToModify();
         await this.scraper.Run();
-        await this.AddDelay(2000);
+        await this.AddDelay(20000);
         //scrap things
     }
     async Launch(interval){

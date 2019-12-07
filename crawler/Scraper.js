@@ -90,7 +90,7 @@ class Scraper {
 
     async Run() {
         await this.GetInfoFromDB();
-        //await this.Scrap();
+        await this.Scrap();
         await this.ScrapTable();
         await this.Dispose();
     }
